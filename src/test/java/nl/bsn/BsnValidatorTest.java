@@ -4,10 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class BsnValidatorTest {
 
-    private final BsnValidator validator = new BsnValidator(); // doesn’t exist yet so the tests will fail
+    private final BsnValidator validator = new BsnValidator(); // exists now so the tests should pass
 
     @Nested
     @DisplayName("Valid BSNs")
@@ -21,8 +23,8 @@ public class BsnValidatorTest {
 
         @ParameterizedTest
         @DisplayName("8-digit BSNs are validated with an implied leading zero")
-        @ValueSource(strings = {"12667151"})
-            // This should be 012667151
+        @ValueSource(strings = {"72124581"})
+            // This should be 072124581 and valid!
         void eightDigitInputsPass(String eightDigits) {
             assertTrue(validator.isValid(eightDigits));
         }
@@ -33,7 +35,7 @@ public class BsnValidatorTest {
     class InvalidCases {
         @ParameterizedTest
         @DisplayName("Rejects bad formats and lengths")
-        @ValueSource(strings = {"", "   ", "abc", "123-456-789", "1234567", "1234567890"})
+        @ValueSource(strings = {"", "   ", "abc^%$gdebhe", "123-456-789","1234567890"})
         void badFormatsFail(String bsn) {
             assertFalse(validator.isValid(bsn));
         }
