@@ -11,6 +11,10 @@ Student number: 500908247
 ### 1. Git log
 
 ```
+6b305aax 2025-09-14     Merge branch 'feat/bsn-validator'
+d18afd3x 2025-09-14     chore: added a png and changed the README.md
+054cbb7x 2025-09-14     Merge branch 'main' of https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
+49487f7x 2025-09-14     chore: reset main to tests-only state for review
 cf84898x 2025-09-14     chore: update pom.xml to see the SonarQube Coverage
 5a0a827x 2025-09-14     chore: ignore build and IDE files; untrack target/, .idea/, *.iml
 169952ax 2025-09-14     chore: update .gitignore to exclude target directory
@@ -84,8 +88,11 @@ class InvalidCases {
 
 ### 4. Code Reviews
 
-Screenshots of the code reviews you have performed on code of another student as comments in Gitlab: Provide a link to the comments in Gitlab.
+These are the screenshots of the code review I have done in GitLab on another student which is Aaron Tedros.
 
-![](/replace-this-with-path-to-your-png-file/screenshot-code-reviews.png)
+![Comment1.png](Comment1.png)
+![Comment2.png](Comment2.png)
+![Comment3.png](Comment3.png)
+![Comment4.png](Comment4.png)
 
-[link-to-comments-you-gave](/somerepo/path-to-file)
+[GitLab Comments Link](https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/aaron-tedros/validatorbsn/-/merge_requests/1)
