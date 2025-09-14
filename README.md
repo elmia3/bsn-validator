@@ -11,6 +11,7 @@ Student number: 500908247
 ### 1. Git log
 
 ```
+185b42dx 2025-09-14     chore: added new photos to put in README.md                                                                                
 6b305aax 2025-09-14     Merge branch 'feat/bsn-validator'
 d18afd3x 2025-09-14     chore: added a png and changed the README.md
 054cbb7x 2025-09-14     Merge branch 'main' of https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
@@ -90,9 +91,9 @@ class InvalidCases {
 
 These are the screenshots of the code review I have done in GitLab on another student which is Aaron Tedros.
 
-![Comment1.png](Comment1.png)
-![Comment2.png](Comment2.png)
-![Comment3.png](Comment3.png)
-![Comment4.png](Comment4.png)
+![CommentsOneAndTwo.png](CommentsOneAndTwo.png)
+![CommentThree.png](CommentThree.png)
+![CommentFour.png](CommentFour.png)
+![CommentFive.png](CommentFive.png)
 
 [GitLab Comments Link](https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/aaron-tedros/validatorbsn/-/merge_requests/1)
