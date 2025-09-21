@@ -11,7 +11,8 @@ Student number: 500908247
 ### 1. Git log
 
 ```
-185b42dx 2025-09-14     chore: added new photos to put in README.md                                                                                
+27b4fc1x 2025-09-14     chore: updated pictures to change comments on GitLab
+185b42dx 2025-09-14     chore: added new photos to put in README.md
 6b305aax 2025-09-14     Merge branch 'feat/bsn-validator'
 d18afd3x 2025-09-14     chore: added a png and changed the README.md
 054cbb7x 2025-09-14     Merge branch 'main' of https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
