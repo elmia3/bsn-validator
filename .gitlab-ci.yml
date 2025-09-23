@@ -1,39 +1,42 @@
+image: maven:3.9.9-eclipse-temurin-17
+
 stages:
   - build
   - test
   - package
   - docker
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .m2/repository
+
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_CLI_OPTS: "-B -V --no-transfer-progress"
 
 build-job:
   stage: build
-  tags:
-    - hva
+  tags: [hva]
   script:
-    - mvn clean compile
+    - mvn $MAVEN_CLI_OPTS -DskipTests clean compile
+  rules:
+    - exists:
+        - pom.xml
 
 test-job:
   stage: test
-  tags:
-    - hva
+  tags: [hva]
   script:
-    - mvn test
+    - mvn $MAVEN_CLI_OPTS test
 
 package-job:
   stage: package
-  tags:
-    - hva
+  tags: [hva]
   script:
-    - mvn clean package -DskipTests
+    - mvn $MAVEN_CLI_OPTS -DskipTests package
   artifacts:
+    when: always
     paths:
       - target/*.jar
-
-docker-build-job:
-  stage: docker
-  tags:
-    - hva
-  script:
-    - docker build -t bsn-validator:ci .
+    expire_in: 1 week
