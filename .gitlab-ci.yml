@@ -1,0 +1,39 @@
+stages:
+  - build
+  - test
+  - package
+  - docker
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+build-job:
+  stage: build
+  tags:
+    - hva
+  script:
+    - mvn clean compile
+
+test-job:
+  stage: test
+  tags:
+    - hva
+  script:
+    - mvn test
+
+package-job:
+  stage: package
+  tags:
+    - hva
+  script:
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+
+docker-build-job:
+  stage: docker
+  tags:
+    - hva
+  script:
+    - docker build -t bsn-validator:ci .
