@@ -56,14 +56,16 @@ docker-build-push:
   services:
     - name: docker:24-dind
       alias: docker
+      command: ["--tls=false"]     
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   tags: [hva]
+  privileged: true
   needs: ["package-job"]
   script:
-    - docker info                   # quick sanity check; prints server info
+    - docker info
     - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
     - docker build -t "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" .
     - docker push "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}"
