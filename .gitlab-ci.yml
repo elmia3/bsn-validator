@@ -53,10 +53,17 @@ package-job:
 docker-build-push:
   stage: docker
   image: docker:24
-  services: [docker:24-dind]
+  services:
+    - name: docker:24-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
   tags: [hva]
   needs: ["package-job"]
   script:
+    - docker info                   # quick sanity check; prints server info
     - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
     - docker build -t "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" .
     - docker push "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}"
@@ -69,6 +76,7 @@ docker-build-push:
       fi
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+
 
 .deploy-template:
   image: curlimages/curl:8.10.1
