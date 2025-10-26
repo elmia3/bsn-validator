@@ -5,7 +5,7 @@ services:
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
       creds:
-        id: rgc-d3v63mvdiees73eoh5v0
+        name: my-gitlab-registry
     plan: free
 
   - type: web
@@ -14,7 +14,7 @@ services:
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
       creds:
-        id: rgc-d3v63mvdiees73eoh5v0
+        name: my-gitlab-registry
     plan: free
 
   - type: web
@@ -23,7 +23,7 @@ services:
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
       creds:
-        id: rgc-d3v63mvdiees73eoh5v0
+        name: my-gitlab-registry
     plan: free
 
   - type: web
@@ -32,5 +32,5 @@ services:
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
       creds:
-        id: rgc-d3v63mvdiees73eoh5v0
+        name: my-gitlab-registry
     plan: free
