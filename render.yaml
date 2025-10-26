@@ -2,23 +2,31 @@ services:
   - type: web
     name: bsn-validator-dev
     env: docker
-    image: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
+    image:
+      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
+      registryCredentialId: my-gitlab-registry
     plan: free
 
   - type: web
     name: bsn-validator-test
     env: docker
-    image: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
+    image:
+      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
+      registryCredentialId: my-gitlab-registry
     plan: free
 
   - type: web
     name: bsn-validator-acc
     env: docker
-    image: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
+    image:
+      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
+      registryCredentialId: my-gitlab-registry
     plan: free
 
   - type: web
     name: bsn-validator-prod
     env: docker
-    image: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
+    image:
+      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
+      registryCredentialId: my-gitlab-registry
     plan: free
