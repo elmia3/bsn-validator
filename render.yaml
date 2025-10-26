@@ -4,7 +4,7 @@ services:
     env: docker
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
-      registryCredentialId: my-gitlab-registry
+    registryCredential: my-gitlab-registry   # <-- service-level, by name
     plan: free
 
   - type: web
@@ -12,7 +12,7 @@ services:
     env: docker
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
-      registryCredentialId: my-gitlab-registry
+    registryCredential: my-gitlab-registry
     plan: free
 
   - type: web
@@ -20,7 +20,7 @@ services:
     env: docker
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
-      registryCredentialId: my-gitlab-registry
+    registryCredential: my-gitlab-registry
     plan: free
 
   - type: web
@@ -28,5 +28,5 @@ services:
     env: docker
     image:
       url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
-      registryCredentialId: my-gitlab-registry
+    registryCredential: my-gitlab-registry
     plan: free
