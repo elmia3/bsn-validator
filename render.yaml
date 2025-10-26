@@ -2,28 +2,23 @@ services:
   - type: web
     name: bsn-validator-dev
     env: docker
-    repo: https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
-    branch: main
+    image: registry.gitlab.com/https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
     plan: free
-    dockerfilePath: ./Dockerfile
+
   - type: web
     name: bsn-validator-test
     env: docker
-    repo: https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
-    branch: main
+    image: registry.gitlab.com/https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
     plan: free
-    dockerfilePath: ./Dockerfile
+
   - type: web
     name: bsn-validator-acc
     env: docker
-    repo: https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
-    branch: main
+    image: registry.gitlab.com/https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
     plan: free
-    dockerfilePath: ./Dockerfile
+
   - type: web
     name: bsn-validator-prod
     env: docker
-    repo: https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator
-    branch: main
+    image: registry.gitlab.com/https://gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
     plan: free
-    dockerfilePath: ./Dockerfile

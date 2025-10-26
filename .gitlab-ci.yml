@@ -66,6 +66,27 @@ package-job:
       - target/*.jar
     expire_in: 1 week
 
+
+
+# after package
+docker-build-push:
+  stage: docker
+  image: docker:24
+  services: [docker:24-dind]
+  tags: [hva]
+  variables:
+    IMAGE_SHA: "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHORT_SHA}"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker build -t "$IMAGE_SHA" .
+    - docker push "$IMAGE_SHA"
+    # convenience tags for envs (latest dev build)
+    - if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+      docker tag "$IMAGE_SHA" "$CI_REGISTRY_IMAGE:dev" && docker push "$CI_REGISTRY_IMAGE:dev";
+      docker tag "$IMAGE_SHA" "$CI_REGISTRY_IMAGE:test" && docker push "$CI_REGISTRY_IMAGE:test";
+      fi
+
+
 # --- Deploys to Render via Deploy Hooks ---
 .deploy-template:
   image: curlimages/curl:8.10.1
