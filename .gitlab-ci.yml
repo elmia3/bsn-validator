@@ -74,16 +74,15 @@ docker-build-push:
   image: docker:24
   services: [docker:24-dind]
   tags: [hva]
-  variables:
-    IMAGE_SHA: "$CI_REGISTRY_IMAGE:${CI_COMMIT_SHORT_SHA}"
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker build -t "$IMAGE_SHA" .
-    - docker push "$IMAGE_SHA"
-    # convenience tags for envs (latest dev build)
+    - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker build -t "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" .
+    - docker push "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}"
     - if [ "$CI_COMMIT_BRANCH" = "main" ]; then
-      docker tag "$IMAGE_SHA" "$CI_REGISTRY_IMAGE:dev" && docker push "$CI_REGISTRY_IMAGE:dev";
-      docker tag "$IMAGE_SHA" "$CI_REGISTRY_IMAGE:test" && docker push "$CI_REGISTRY_IMAGE:test";
+      for tag in dev test; do
+      docker tag "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" "$DOCKERHUB_USERNAME/bsn-validator:$tag";
+      docker push "$DOCKERHUB_USERNAME/bsn-validator:$tag";
+      done;
       fi
 
 
