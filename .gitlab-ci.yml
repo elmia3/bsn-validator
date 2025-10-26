@@ -3,6 +3,7 @@ image: maven:3.9.9-eclipse-temurin-17
 stages:
   - build
   - test
+  - quality        # NEW
   - package
   - docker
 
@@ -14,6 +15,7 @@ cache:
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   MAVEN_CLI_OPTS: "-B -V --no-transfer-progress"
+  GIT_DEPTH: "0"   # Sonar needs full history to analyze branches
 
 build-job:
   stage: build
@@ -30,9 +32,29 @@ test-job:
   script:
     - mvn $MAVEN_CLI_OPTS test
 
+# --- NEW: Static analysis with SonarQube/SonarCloud ---
+quality-sonar:
+  stage: quality
+  tags: [hva]
+  needs: ["test-job"]
+  script:
+    - >
+      mvn $MAVEN_CLI_OPTS verify sonar:sonar
+      -Dsonar.host.url=${SONAR_HOST_URL}
+      -Dsonar.login=${SONAR_TOKEN}
+      -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+      -Dsonar.qualitygate.wait=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/jacoco/index.html
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+
 package-job:
   stage: package
   tags: [hva]
+  needs: ["quality-sonar"]  # ensure quality gate ran
   script:
     - mvn $MAVEN_CLI_OPTS -DskipTests package
   artifacts:
@@ -40,3 +62,57 @@ package-job:
     paths:
       - target/*.jar
     expire_in: 1 week
+
+# --- Deploys to Render via Deploy Hooks ---
+.deploy-template:
+  image: curlimages/curl:8.10.1
+  tags: [hva]
+  script:
+    - 'curl -fsSL -X POST "$RENDER_HOOK_URL" -d "{}"'
+  environment:
+    name: $ENV_NAME
+    url: $ENV_URL
+
+deploy:dev:
+  stage: deploy
+  extends: .deploy-template
+  variables:
+    RENDER_HOOK_URL: $RENDER_DEV_HOOK_URL
+    ENV_NAME: development
+    ENV_URL: $RENDER_DEV_URL
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy:test:
+  stage: deploy
+  extends: .deploy-template
+  variables:
+    RENDER_HOOK_URL: $RENDER_TEST_HOOK_URL
+    ENV_NAME: test
+    ENV_URL: $RENDER_TEST_URL
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy:acc:
+  stage: deploy
+  extends: .deploy-template
+  when: manual
+  allow_failure: false
+  variables:
+    RENDER_HOOK_URL: $RENDER_ACC_HOOK_URL
+    ENV_NAME: acceptance
+    ENV_URL: $RENDER_ACC_URL
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+deploy:prod:
+  stage: deploy
+  extends: .deploy-template
+  when: manual
+  allow_failure: false
+  variables:
+    RENDER_HOOK_URL: $RENDER_PROD_HOOK_URL
+    ENV_NAME: production
+    ENV_URL: $RENDER_PROD_URL
+  rules:
+    - if: $CI_COMMIT_TAG

@@ -14,6 +14,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.3.3</spring-boot.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <sonar.projectKey>bsn-validator-Abdullah-Elmi</sonar.projectKey>
+        <sonar.projectName>bsn-validator Abdullah Elmi</sonar.projectName>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
     </properties>
 
     <!-- Manage versions the Boot way -->
@@ -50,7 +53,6 @@
 
     <build>
         <plugins>
-            <!-- MAKE THE JAR EXECUTABLE -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
