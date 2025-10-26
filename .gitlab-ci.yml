@@ -53,31 +53,26 @@ package-job:
 docker-build-push:
   stage: docker
   image:
-    name: gcr.io/kaniko-project/executor:v1.23.2
-    entrypoint: [""]
+    name: gcr.io/kaniko-project/executor:debug   # <-- debug has /busybox/sh
+    entrypoint: [""]                             # <-- let GitLab use the shell in the image
   tags: [hva]
   needs: ["package-job"]
   variables:
     DOCKER_CONFIG: /kaniko/.docker/
   before_script:
-    # Prepare Docker Hub authentication for Kaniko
     - mkdir -p /kaniko/.docker
-    - |
-      echo '{
-        "auths": {
-          "https://index.docker.io/v1/": {
-            "auth": "'$(echo -n "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" | base64 -w0)'"
-          }
-        }
-      }' > /kaniko/.docker/config.json
+    - >
+      echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(echo -n
+      \"$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN\" | base64 -w0)\"}}}" > /kaniko/.docker/config.json
   script:
-    # Build & push the image
-    - /kaniko/executor
+    # Build & push the commit image
+    - >
+      /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --destination "${DOCKERHUB_USERNAME}/bsn-validator:${CI_COMMIT_SHORT_SHA}"
 
-    # Tag & push dev/test images when on main
+    # Tag & push dev/test on main
     - |
       if [ "$CI_COMMIT_BRANCH" = "main" ]; then
         for tag in dev test; do
