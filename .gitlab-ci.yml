@@ -40,18 +40,19 @@ quality-sonar:
   tags: [hva]
   needs: ["test-job"]
   script:
+    - echo "SONAR_HOST_URL=${SONAR_HOST_URL}"
     - >
-      mvn $MAVEN_CLI_OPTS verify sonar:sonar
+      mvn $MAVEN_CLI_OPTS verify
+      org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
       -Dsonar.host.url=${SONAR_HOST_URL}
       -Dsonar.login=${SONAR_TOKEN}
-      -Dsonar.projectKey=${SONAR_PROJECT_KEY}
-      -Dsonar.qualitygate.wait=true
   artifacts:
     when: always
     paths:
       - target/site/jacoco/index.html
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
+
 
 package-job:
   stage: package
