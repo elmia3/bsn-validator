@@ -54,34 +54,30 @@ docker-build-push:
   stage: docker
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2
-    entrypoint: [""]                # important for GitLab
+    entrypoint: [""]
   tags: [hva]
   needs: ["package-job"]
   variables:
     DOCKER_CONFIG: /kaniko/.docker/
-  script:
-    # Create Docker Hub login for Kaniko
+  before_script:
+    # Prepare Docker Hub authentication for Kaniko
     - mkdir -p /kaniko/.docker
     - |
-      cat > /kaniko/.docker/config.json <<'JSON'
-      {
+      echo '{
         "auths": {
           "https://index.docker.io/v1/": {
-            "auth": "__AUTH__"
+            "auth": "'$(echo -n "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" | base64 -w0)'"
           }
         }
-      }
-      JSON
-    # Fill in the base64("username:token")
-    - sed -i "s/__AUTH__/$(echo -n "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" | base64 -w0)/" /kaniko/.docker/config.json
-
-    # Build & push the commit image
+      }' > /kaniko/.docker/config.json
+  script:
+    # Build & push the image
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --destination "${DOCKERHUB_USERNAME}/bsn-validator:${CI_COMMIT_SHORT_SHA}"
 
-    # On main: tag & push dev + test
+    # Tag & push dev/test images when on main
     - |
       if [ "$CI_COMMIT_BRANCH" = "main" ]; then
         for tag in dev test; do
