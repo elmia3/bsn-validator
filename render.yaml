@@ -3,34 +3,26 @@ services:
     name: bsn-validator-dev
     env: docker
     image:
-      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:dev
-      creds:
-        name: my-gitlab-registry
+      url: docker.io/appieelmi/bsn-validator:dev
     plan: free
 
   - type: web
     name: bsn-validator-test
     env: docker
     image:
-      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:test
-      creds:
-        name: my-gitlab-registry
+      url: docker.io/appieelmi/bsn-validator:test
     plan: free
 
   - type: web
     name: bsn-validator-acc
     env: docker
     image:
-      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:acc
-      creds:
-        name: my-gitlab-registry
+      url: docker.io/appieelmi/bsn-validator:acc
     plan: free
 
   - type: web
     name: bsn-validator-prod
     env: docker
     image:
-      url: registry.gitlab.fdmci.hva.nl/se-specialization-25-26-semester-1/tse2/abdullah-elmi/bsn-validator:prod
-      creds:
-        name: my-gitlab-registry
+      url: docker.io/appieelmi/bsn-validator:prod
     plan: free
