@@ -1,97 +1,79 @@
 image: maven:3.9.9-eclipse-temurin-17
 
-stages:
-  - build
-  - test
-  - quality
-  - package
-  - docker
-  - deploy        # <-- add this
-
+stages: [build, test, quality, package, docker, deploy]
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .m2/repository
+  paths: [.m2/repository]
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   MAVEN_CLI_OPTS: "-B -V --no-transfer-progress"
-  GIT_DEPTH: "0"   # Sonar needs full history to analyze branches
+  GIT_DEPTH: "0"
 
 build-job:
   stage: build
   tags: [hva]
-  script:
-    - mvn $MAVEN_CLI_OPTS -DskipTests clean compile
+  script: mvn $MAVEN_CLI_OPTS -DskipTests clean compile
   rules:
-    - exists:
-        - pom.xml
+    - exists: [pom.xml]
 
 test-job:
   stage: test
   tags: [hva]
-  script:
-    - mvn $MAVEN_CLI_OPTS test
+  script: mvn $MAVEN_CLI_OPTS test
 
-# --- NEW: Static analysis with SonarQube/SonarCloud ---
 quality-sonar:
   stage: quality
   tags: [hva]
   needs: ["test-job"]
-  script:
-    - echo "SONAR_HOST_URL=${SONAR_HOST_URL}"
-    - >
-      mvn $MAVEN_CLI_OPTS verify
-      org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
-      -Dsonar.host.url=${SONAR_HOST_URL}
-      -Dsonar.login=${SONAR_TOKEN}
+  script: >
+    mvn $MAVEN_CLI_OPTS verify
+    org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar
+    -Dsonar.host.url=${SONAR_HOST_URL}
+    -Dsonar.login=${SONAR_TOKEN}
+    -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+    -Dsonar.qualitygate.wait=true
   artifacts:
     when: always
-    paths:
-      - target/site/jacoco/index.html
+    paths: [target/site/jacoco/index.html]
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
-
 
 package-job:
   stage: package
   tags: [hva]
-  needs: ["quality-sonar"]  # ensure quality gate ran
-  script:
-    - mvn $MAVEN_CLI_OPTS -DskipTests package
+  needs: ["quality-sonar"]
+  script: mvn $MAVEN_CLI_OPTS -DskipTests package
   artifacts:
     when: always
-    paths:
-      - target/*.jar
+    paths: [target/*.jar]
     expire_in: 1 week
 
-
-
-# after package
 docker-build-push:
   stage: docker
   image: docker:24
   services: [docker:24-dind]
   tags: [hva]
+  needs: ["package-job"]
   script:
     - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
     - docker build -t "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" .
     - docker push "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}"
-    - if [ "$CI_COMMIT_BRANCH" = "main" ]; then
-      for tag in dev test; do
-      docker tag "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" "$DOCKERHUB_USERNAME/bsn-validator:$tag";
-      docker push "$DOCKERHUB_USERNAME/bsn-validator:$tag";
-      done;
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        for tag in dev test; do
+          docker tag "$DOCKERHUB_USERNAME/bsn-validator:${CI_COMMIT_SHORT_SHA}" "$DOCKERHUB_USERNAME/bsn-validator:$tag"
+          docker push "$DOCKERHUB_USERNAME/bsn-validator:$tag"
+        done
       fi
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
 
-
-# --- Deploys to Render via Deploy Hooks ---
 .deploy-template:
   image: curlimages/curl:8.10.1
   tags: [hva]
-  script:
-    - 'curl -fsSL -X POST "$RENDER_HOOK_URL" -d "{}"'
+  script: 'curl -fsSL -X POST "$RENDER_HOOK_URL" -d "{}"'
   environment:
     name: $ENV_NAME
     url: $ENV_URL
@@ -99,6 +81,7 @@ docker-build-push:
 deploy:dev:
   stage: deploy
   extends: .deploy-template
+  needs: ["docker-build-push"]
   variables:
     RENDER_HOOK_URL: $RENDER_DEV_HOOK_URL
     ENV_NAME: development
@@ -109,6 +92,7 @@ deploy:dev:
 deploy:test:
   stage: deploy
   extends: .deploy-template
+  needs: ["docker-build-push"]
   variables:
     RENDER_HOOK_URL: $RENDER_TEST_HOOK_URL
     ENV_NAME: test
@@ -119,6 +103,7 @@ deploy:test:
 deploy:acc:
   stage: deploy
   extends: .deploy-template
+  needs: ["docker-build-push"]
   when: manual
   allow_failure: false
   variables:
@@ -131,6 +116,7 @@ deploy:acc:
 deploy:prod:
   stage: deploy
   extends: .deploy-template
+  needs: ["docker-build-push"]
   when: manual
   allow_failure: false
   variables:
